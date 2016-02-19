@@ -12,7 +12,23 @@ This library assumes that the following details are present as environment varia
 
 This library provides a wrapper function for [clj-http](https://github.com/dakrone/clj-http) client functions, so that you can simply make requests as you normally would and the bearer access token will be transparently added to the request headers.
 
-In your project.clj: `[thirtyspokes/hindrance "0.1.0"]`
+In your project.clj: 
+
+```
+[thirtyspokes/hindrance "0.1.1"]
+```
+
+Or if your desires are... *unconventional*:
+
+```
+<dependency>
+  <groupId>thirtyspokes</groupId>
+  <artifactId>hindrance</artifactId>
+  <version>0.1.1</version>
+</dependency>
+```
+
+Then:
 
 ```clojure
 (ns your-project.core
