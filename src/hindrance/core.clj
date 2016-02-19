@@ -3,7 +3,7 @@
             [cheshire.core :refer :all]
             [environ.core :refer [env]]
             [clj-jwt.core :refer :all]
-            [clj-time.core :refer [after? now plus minutes seconds]]))
+            [clj-time.core :as t]))
 
 (def current-token (atom {}))
 
@@ -11,8 +11,8 @@
   {:iss (env :hindrance-oauth-client-id)
    :sub (env :hindrance-oauth-client-id)
    :aud (env :hindrance-oauth-token-url)
-   :exp (plus (now) (minutes 30))
-   :iat (now)})
+   :exp (t/plus (t/now) (t/minutes 30))
+   :iat (t/now)})
 
 (defn- build-jwt
   "Constructs the JWT from the configured parameters and signs it
@@ -45,7 +45,7 @@
   []
   (let [response (parse-string (:body (make-token-request)) true)]
     {:token (:access_token response)
-     :expires (plus (now) (seconds (Integer/parseInt (:expires_in response))))}))
+     :expires (t/plus (t/now) (t/seconds (Integer/parseInt (:expires_in response))))}))
 
 (defn get-access-token
   "Returns the 'current' access token, fetching a new token from 
@@ -56,8 +56,8 @@
   including in the Authorization header."
   []
   (let [token @current-token]
-    (if (or (= {} token)
-            (after? (now) (:expires token))) 
+    (if (or (empty? token)
+            (t/after? (t/now) (:expires token))) 
       (let [new-token-map (request-access-token)
             token (:token new-token-map)
             expires (:expires new-token-map)]
