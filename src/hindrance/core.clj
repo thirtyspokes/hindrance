@@ -5,7 +5,7 @@
             [clj-jwt.core :refer :all]
             [clj-time.core :as t]))
 
-(def current-token (atom {}))
+(def ^:private current-token (atom {}))
 
 (def claim
   {:iss (env :hindrance-oauth-client-id)

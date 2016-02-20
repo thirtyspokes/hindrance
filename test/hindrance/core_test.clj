@@ -19,11 +19,11 @@
     (with-redefs [request-access-token (fn [] example-token)]
       (is (= (get-access-token) "example"))))
   (testing "It will re-use a token, if the one it has hasn't expired."
-    (with-redefs [current-token (atom future-token)
+    (with-redefs [hindrance.core/current-token (atom future-token)
                   request-access-token (fn [] example-token)]
       (is (= (get-access-token) "not-expired"))))
   (testing "It will get a new token, if the current one has expired."
-    (with-redefs [current-token (atom expired-token)
+    (with-redefs [hindrance.core/current-token (atom expired-token)
                   request-access-token (fn [] example-token)]
       (is (= (get-access-token) "example")))))
 
