@@ -15,7 +15,7 @@ This library provides a wrapper function for [clj-http](https://github.com/dakro
 In your project.clj: 
 
 ```
-[thirtyspokes/hindrance "0.1.2"]
+[thirtyspokes/hindrance "0.1.3"]
 ```
 
 Or if your desires are *unconventional*:
@@ -24,7 +24,7 @@ Or if your desires are *unconventional*:
 <dependency>
   <groupId>thirtyspokes</groupId>
   <artifactId>hindrance</artifactId>
-  <version>0.1.2</version>
+  <version>0.1.3</version>
 </dependency>
 ```
 

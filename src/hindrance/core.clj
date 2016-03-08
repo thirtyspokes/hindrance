@@ -7,7 +7,8 @@
 
 (def ^:private current-token (atom {}))
 
-(def claim
+(defn claim
+  []
   {:iss (env :hindrance-oauth-client-id)
    :sub (env :hindrance-oauth-client-id)
    :aud (env :hindrance-oauth-token-url)
@@ -18,7 +19,7 @@
   "Constructs the JWT from the configured parameters and signs it
   with HMAC-SHA256."
   []
-  (-> claim
+  (-> (claim)
       jwt
       (sign :HS256 (env :hindrance-oauth-shared-secret))
       to-str))
@@ -68,8 +69,11 @@
   "Wraps a clj-http request function, setting the Authorization header of the
    request to contain an OAuth JWT Bearer token.  The token will either be one
    that has been previously requested, or a brand-new one if one hasn't been
-   requested yet or the current one has expired."
+   requested yet or the current one has expired.
+
+   The request to get the OAuth token will inherit the :throw-exceptions setting
+   being used to make the main request."
   [func url & opt-map]
-  (func url (assoc-in
-             (into {} (first opt-map))
-             [:headers :authorization] (str "Bearer " (get-access-token)))))
+  (let [options (into {} (first opt-map))]
+    (func url (assoc-in options [:headers :authorization] (str "Bearer " (get-access-token))))))
+

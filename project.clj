@@ -1,4 +1,4 @@
-(defproject thirtyspokes/hindrance "0.1.2"
+(defproject thirtyspokes/hindrance "0.1.3"
   :description "A convenience wrapper for using OAuth JWT credentials flow with clj-http."
   :url "https://github.com/thirtyspokes/hindrance"
   :license {:name "Eclipse Public License"

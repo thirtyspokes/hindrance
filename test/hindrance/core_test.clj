@@ -41,6 +41,6 @@
 
 (deftest environmental-config-test
   (testing "It reads environmental configuration."
-    (is (= (:iss claim) "testing-client-id"))
-    (is (= (:sub claim) "testing-client-id"))
-    (is (= (:aud claim) "http://your-oauth-provider.com"))))
+    (is (= (:iss (claim)) "testing-client-id"))
+    (is (= (:sub (claim)) "testing-client-id"))
+    (is (= (:aud (claim)) "http://your-oauth-provider.com"))))
