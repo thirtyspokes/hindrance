@@ -5,6 +5,13 @@
             [clj-http.client :as client]
             [hindrance.core :refer :all]))
 
+(defn creds-fixture
+  [f]
+  (defcreds "testing-client-id" "testing-shared-secret" "http://your-oauth-provider.com")
+  (f))
+
+(use-fixtures :once creds-fixture)
+
 (def example-token
   {:token "example" :expires (plus (now) (minutes 1))})
 
@@ -38,6 +45,8 @@
                   get-access-token (fn [] (:token example-token))]
       (is (= (with-oauth-token client/get "http://test.com")
              {:headers {:authorization "Bearer example"}})))))
+
+(def claim #'hindrance.core/claim)
 
 (deftest environmental-config-test
   (testing "It reads environmental configuration."

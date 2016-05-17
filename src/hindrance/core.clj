@@ -7,11 +7,18 @@
 
 (def ^:private current-token (atom {}))
 
-(defn claim
+(defn defcreds
+  [client-id shared-secret token-url]
+  (def ^:private creds 
+    (atom {:client-id client-id
+           :shared-secret shared-secret
+           :token-url token-url})))
+
+(defn- claim
   []
-  {:iss (env :hindrance-oauth-client-id)
-   :sub (env :hindrance-oauth-client-id)
-   :aud (env :hindrance-oauth-token-url)
+  {:iss (:client-id @creds)
+   :sub (:client-id @creds)
+   :aud (:token-url @creds)
    :exp (t/plus (t/now) (t/minutes 30))
    :iat (t/now)})
 
@@ -21,7 +28,7 @@
   []
   (-> (claim)
       jwt
-      (sign :HS256 (env :hindrance-oauth-shared-secret))
+      (sign :HS256 (:shared-secret @creds))
       to-str))
 
 (defn- make-token-request
