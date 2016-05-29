@@ -88,3 +88,12 @@
         creds (credentials-from-env)]
     (func url (assoc-in options [:headers :authorization] (str "Bearer " (get-access-token creds))))))
 
+(defn with-credentials
+  "Does the same as with-oauth-token, but accepts the credentials to be used as 
+   an explicit first parameter than reading from environmental configuration.
+
+   The tokens are stored using the :client-id from the credentials map as the
+   key."
+  [creds func url & opt-map]
+  (let [options (into {} (first opt-map))]
+    (func url (assoc-in options [:headers :authorization] (str "Bearer " (get-access-token creds))))))

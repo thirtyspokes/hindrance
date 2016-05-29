@@ -39,6 +39,38 @@
       (is (= (with-oauth-token client/get "http://test.com")
              {:headers {:authorization "Bearer example"}})))))
 
+(def test-creds
+  {:client-id "testing-client-id"
+   :shared-secret "testing-shared-secret"
+   :token-url "http://your-oauth-provider.com"})
+
+(def other-test-creds
+  {:client-id "testing-other-client-id"
+   :shared-secret "testing-other-shared-secret"
+   :token-url "http://your-oauth-provider.com"})
+
+(def test-storage (atom {}))
+
+(deftest with-creds-test
+  (testing "It adds the token to the request option map using the environment vars."
+    (with-redefs [client/post (fn [url option-map] option-map)
+                  get-access-token (fn [creds] (:token example-token))]
+      (is (= (with-credentials test-creds client/post "http://www.test.com" {:body "Testing"})
+             {:body "Testing" :headers {:authorization "Bearer example"}}))))
+  (testing "It can store multiple different client IDs"
+    (with-redefs [client/post (fn [url option-map] option-map)
+                  request-access-token (fn [creds] "hello")
+                  hindrance.core/tokens test-storage]
+      (do
+        (with-credentials test-creds client/post "http://www.test.com" {:body "Testing"})
+        (with-credentials other-test-creds client/post "http://www.test.com" {:body "Testing"})
+        (is (= (count @test-storage) 2)))))
+  (testing "It initializes the option map if none is provided."
+    (with-redefs [client/get (fn [url option-map] option-map)
+                  get-access-token (fn [creds] (:token example-token))]
+      (is (= (with-credentials test-creds client/get "http://test.com")
+             {:headers {:authorization "Bearer example"}})))))
+
 (deftest environmental-config-test
   (testing "It reads environmental configuration."
     (is (= (:iss (claim (credentials-from-env))) "testing-client-id"))
