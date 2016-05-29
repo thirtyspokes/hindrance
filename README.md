@@ -20,7 +20,7 @@ Provided are two convenience functions for making authenticated reuqests using [
 (with-credentials my-creds client/get "https://some.authenticated-service.com")
 ```
 
-The above will first make a POST request to the identity provider and store the received token locally, then add it to the Authorization headers in your request.
+The above will first make a POST request to the identity provider and store the received token locally, then add it to the Authorization headers in your request (none of the other readers or any other items from the request map will be changed.)
 
 If you prefer to load your configuration from the environment, there is an equivalent function `with-oauth-token` that assumes that the following details are present as environment variables (or any other place where [environ](https://github.com/weavejester/environ) can access them):
 
@@ -35,7 +35,7 @@ If you prefer to load your configuration from the environment, there is an equiv
 
 ;; This is equivalent to the example above, except the values for the identity provider request
 ;; will be read from environmental variables.
-(with-oauth-token client/get "https://www.some-authenticated-service.com")
+(with-oauth-token client/post "https://cool.service.com" {:form-params {:foo "bar"}})
 ```
 
 ## Usage
