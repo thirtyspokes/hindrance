@@ -16,31 +16,31 @@
 
 (deftest get-access-token-test
   (testing "It fetches a token if there isn't one already."
-    (with-redefs [request-access-token (fn [] example-token)]
-      (is (= (get-access-token) "example"))))
+    (with-redefs [request-access-token (fn [creds] example-token)]
+      (is (= (get-access-token (credentials-from-env)) "example"))))
   (testing "It will re-use a token, if the one it has hasn't expired."
-    (with-redefs [hindrance.core/current-token (atom future-token)
-                  request-access-token (fn [] example-token)]
-      (is (= (get-access-token) "not-expired"))))
+    (with-redefs [hindrance.core/tokens (atom {"testing-client-id" future-token})
+                  request-access-token (fn [creds] example-token)]
+      (is (= (get-access-token (credentials-from-env)) "not-expired"))))
   (testing "It will get a new token, if the current one has expired."
-    (with-redefs [hindrance.core/current-token (atom expired-token)
-                  request-access-token (fn [] example-token)]
-      (is (= (get-access-token) "example")))))
+    (with-redefs [hindrance.core/tokens (atom {"testing-client-id" expired-token})
+                  request-access-token (fn [creds] example-token)]
+      (is (= (get-access-token (credentials-from-env)) "example")))))
 
 (deftest with-oauth-token-test
-  (testing "It adds the token to the request option map."
+  (testing "It adds the token to the request option map using the environment vars."
     (with-redefs [client/post (fn [url option-map] option-map)
-                  get-access-token (fn [] (:token example-token))]
+                  get-access-token (fn [creds] (:token example-token))]
       (is (= (with-oauth-token client/post "http://www.test.com" {:body "Testing"})
              {:body "Testing" :headers {:authorization "Bearer example"}}))))
   (testing "It initializes the option map if none is provided."
     (with-redefs [client/get (fn [url option-map] option-map)
-                  get-access-token (fn [] (:token example-token))]
+                  get-access-token (fn [creds] (:token example-token))]
       (is (= (with-oauth-token client/get "http://test.com")
              {:headers {:authorization "Bearer example"}})))))
 
 (deftest environmental-config-test
   (testing "It reads environmental configuration."
-    (is (= (:iss (claim)) "testing-client-id"))
-    (is (= (:sub (claim)) "testing-client-id"))
-    (is (= (:aud (claim)) "http://your-oauth-provider.com"))))
+    (is (= (:iss (claim (credentials-from-env))) "testing-client-id"))
+    (is (= (:sub (claim (credentials-from-env))) "testing-client-id"))
+    (is (= (:aud (claim (credentials-from-env))) "http://your-oauth-provider.com"))))
