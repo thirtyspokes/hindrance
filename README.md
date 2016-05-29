@@ -36,6 +36,7 @@ If you prefer to load your configuration from the environment, there is an equiv
 ;; This is equivalent to the example above, except the values for the identity provider request
 ;; will be read from environmental variables.
 (with-oauth-token client/post "https://cool.service.com" {:form-params {:foo "bar"}})
+```
 
 In addition to the examples above, if you just want the token and don't care about the convenience functions (e.g., you aren't using clj-http):
 
@@ -48,9 +49,6 @@ In addition to the examples above, if you just want the token and don't care abo
 
 (get-access-token my-credentials)
 ;; Will return your access token, as a string.
-```
-
-Hindrance will save the token you receive as an atom, and whenever `get-access-token` is called, it will re-use the token if it has not yet expired (based on the expiry time defined by your OAuth token provider), or request a brand-new one if it has.
 ```
 
 ## Usage
