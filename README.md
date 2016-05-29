@@ -20,7 +20,7 @@ Provided are two convenience functions for making authenticated reuqests using [
 (with-credentials my-creds client/get "https://some.authenticated-service.com")
 ```
 
-The above will first make a POST request to the identity provider and store the received token locally, then add it to the Authorization headers in your request (none of the other readers or any other items from the request map will be changed.)
+The above will first make a POST request to the identity provider and store the received token locally, then add it to the Authorization headers in your request (none of the other readers or any other items from the request map will be changed).  The stored token will be used for all following authenticated requests until it expires, at which time a new one will be retrieved.
 
 If you prefer to load your configuration from the environment, there is an equivalent function `with-oauth-token` that assumes that the following details are present as environment variables (or any other place where [environ](https://github.com/weavejester/environ) can access them):
 
@@ -36,6 +36,21 @@ If you prefer to load your configuration from the environment, there is an equiv
 ;; This is equivalent to the example above, except the values for the identity provider request
 ;; will be read from environmental variables.
 (with-oauth-token client/post "https://cool.service.com" {:form-params {:foo "bar"}})
+
+In addition to the examples above, if you just want the token and don't care about the convenience functions (e.g., you aren't using clj-http):
+
+```clojure
+(ns your-project.core
+  (:require [hindrance.core :refer [get-access-token]]))
+
+(def my-credentials
+  { ... })
+
+(get-access-token my-credentials)
+;; Will return your access token, as a string.
+```
+
+Hindrance will save the token you receive as an atom, and whenever `get-access-token` is called, it will re-use the token if it has not yet expired (based on the expiry time defined by your OAuth token provider), or request a brand-new one if it has.
 ```
 
 ## Usage
@@ -55,19 +70,6 @@ Or if your desires are *unconventional*:
   <version>1.0.0</version>
 </dependency>
 ```
-
-Also, if you just want the token for some other purpose and don't care about the convenience function:
-
-```clojure
-(ns your-project.core
-  (:require [hindrance.core :refer [get-access-token]]))
-
-(get-access-token)
-;; Will return your access token, as a string.
-```
-
-Hindrance will save the token you receive as an atom, and whenever `get-access-token` is called, it will re-use the token if it has not yet expired (based on the expiry time defined by your OAuth token provider), or request a brand-new one if it has.
-
 ## License
 
 Copyright © 2016 Ray Ashman Jr.
