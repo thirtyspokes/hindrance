@@ -71,6 +71,13 @@
       (is (= (with-credentials test-creds client/get "http://test.com")
              {:headers {:authorization "Bearer example"}})))))
 
+(deftest response-structure-test
+  (testing "Handles the 'old' token structure and the 'new'."
+    (with-redefs [hindrance.core/make-token-request (fn [x] {:body (generate-string {:access_token "my-token" :expires_in "1"})})]
+      (is (= (:token (request-access-token {})) "my-token")))
+    (with-redefs [hindrance.core/make-token-request (fn [x] {:body (generate-string {:data {:access_token "my-token" :expires_in "1"}})})]
+      (is (= (:token (request-access-token {})) "my-token")))))
+
 (deftest environmental-config-test
   (testing "It reads environmental configuration."
     (is (= (:iss (claim (credentials-from-env))) "testing-client-id"))

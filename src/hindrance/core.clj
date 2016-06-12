@@ -52,9 +52,11 @@
   Assumes that your OAuth provider will return the expiry time as number of
   seconds from 'now'."
   [creds]
-  (let [response (parse-string (:body (make-token-request creds)) true)]
-    {:token (:access_token response)
-     :expires (t/plus (t/now) (t/seconds (Integer/parseInt (:expires_in response))))}))
+  (let [response (parse-string (:body (make-token-request creds)) true)
+        token (get-in response [:data :access_token] (:access_token response))
+        expires (get-in response [:data :expires_in] (:expires_in response))]
+    {:token token
+     :expires (t/plus (t/now) (t/seconds (Integer/parseInt expires)))}))
 
 (defn get-access-token
   "Returns the 'current' access token, fetching a new token from 
