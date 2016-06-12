@@ -56,7 +56,7 @@ In addition to the examples above, if you just want the token and don't care abo
 In your project.clj: 
 
 ```
-[thirtyspokes/hindrance "1.0.0"]
+[thirtyspokes/hindrance "1.1.0"]
 ```
 
 Or if your desires are *unconventional*:
@@ -65,7 +65,7 @@ Or if your desires are *unconventional*:
 <dependency>
   <groupId>thirtyspokes</groupId>
   <artifactId>hindrance</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 ## License
